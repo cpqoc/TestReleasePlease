@@ -7,8 +7,8 @@ on:
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   PR_TITLE: ${{ github.event.pull_request.title }}
-  DEV_PR_TITLE_REGEX: "^(feat|fix|app){1}: [[:alnum:] ]+$"
-  REL_PR_TITLE_REGEX: "^(rel){1}: [[:alnum:] ]+$"
+  DEV_PR_TITLE_REGEX: "^(feat|fix|app){1}:[[digit:]]+: [[:alnum:] ]+$"
+  REL_PR_TITLE_REGEX: "^(rel){1}:[[:digit:]]+: [[:alnum:] ]+$"
   BRANCH_REGEX: "^[[:lower:]-]+#[[:digit:]]+$"
 
 jobs:
