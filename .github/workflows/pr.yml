@@ -7,7 +7,7 @@ on:
 env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   PR_TITLE: ${{ github.event.pull_request.title }}
-  DEV_PR_TITLE_REGEX: "^(feat|fix|app){1}: [[digit:]]+: [[:alnum:] ]+$"
+  DEV_PR_TITLE_REGEX: "^(feat|fix|app){1}: [[:digit:]]+: [[:alnum:] ]+$"
   REL_PR_TITLE_REGEX: "^(rel){1}: [[:digit:]]+: [[:alnum:] ]+$"
   BRANCH_REGEX: "^[[:lower:]-]+#[[:digit:]]+$"
 
@@ -65,4 +65,12 @@ jobs:
             echo "  - Delete old branch: \`git push -d origin old-name\`" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi   
+
+  Label:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/labeler@v5
           
