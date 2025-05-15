@@ -19,9 +19,7 @@ jobs:
         shell: bash {0}
         run: |
           case "${BRANCH_NAME}" in
-            "${{ github.event.repository.default_branch }}")
-            "UAT")
-            "E2E")
+            "${{ github.event.repository.default_branch }}" | "UAT" | "E2E")
               PR_TITLE_REGEX="${REL_PR_TITLE_REGEX}"
               ;;
 
