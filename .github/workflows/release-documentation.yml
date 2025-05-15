@@ -1,0 +1,68 @@
+name: PR
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  PR_TITLE: ${{ github.event.pull_request.title }}
+  DEV_PR_TITLE_REGEX: "^(feat|fix|app){1}: [[:alnum:] ]+$"
+  REL_PR_TITLE_REGEX: "^(rel){1}: [[:alnum:] ]+$"
+  BRANCH_REGEX: "^[[:lower:]-]+#[[:digit:]]+$"
+
+jobs:
+  Title:
+    runs-on: ubuntu-latest
+    steps:
+      - name : Check PR Title
+        shell: bash {0}
+        run: |
+          case "${BRANCH_NAME}" in
+            "${{ github.event.repository.default_branch }}")
+            "UAT")
+            "E2E")
+              PR_TITLE_REGEX="${REL_PR_TITLE_REGEX}"
+              ;;
+
+            *)
+              PR_TITLE_REGEX="${DEV_PR_TITLE_REGEX}"
+              ;;
+          esac
+              
+          echo "${PR_TITLE}"
+          echo "${PR_TITLE_REGEX}"
+          echo $[[ "${PR_TITLE}" =~ ${PR_TITLE_REGEX} ]]
+
+          if ! [[ "${PR_TITLE}" =~ ${PR_TITLE_REGEX} ]]; then
+            echo "PR title does not follow the necessary format: <type>: <description>" >> $GITHUB_STEP_SUMMARY
+            echo "  Regex: \`$PR_TITLE_REGEX\`" >> $GITHUB_STEP_SUMMARY
+            echo "<type> can be any of the following: fix, feat, app" >> $GITHUB_STEP_SUMMARY
+            echo "  \`fix\` - fix existing functionality" >> $GITHUB_STEP_SUMMARY
+            echo "  \`feat\` - net new feature" >> $GITHUB_STEP_SUMMARY
+            echo "  \`app\` - installing 3rd party app" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  Branch:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name : Check Branch Name
+        shell: bash {0}
+        run: |
+          if ! [[ "${BRANCH_NAME}" =~ ${BRANCH_REGEX} ]]; then
+            echo "Branch does not follow the necessary format: <branch-name>#<taskid>" >> $GITHUB_STEP_SUMMARY
+            echo "  Regex: \`${BRANCH_REGEX}\`" >> $GITHUB_STEP_SUMMARY
+            echo "<branch-name> - lowercase short description of the changes with \`-\` instead of \` \`" >> $GITHUB_STEP_SUMMARY
+            echo "<taskid> - id of the task the changes are for" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "What do you do if you see this message?" >> $GITHUB_STEP_SUMMARY
+            echo "  - Close this PR" >> $GITHUB_STEP_SUMMARY
+            echo "  - Rename branch: \`git branch -m ${BRANCH_NAME} correct-branch-name#1234^\`" >> $GITHUB_STEP_SUMMARY
+            echo "  - Push branch: \`git push -u origin correct-branch-name#1234^\`" >> $GITHUB_STEP_SUMMARY
+            echo "  - Create a new PR for the new branch and verify your changes are there" >> $GITHUB_STEP_SUMMARY
+            echo "  - Delete old branch: \`git push -d origin old-name\`" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi   
+          

@@ -1,0 +1,10 @@
+# https://github.com/actions/labeler
+# Add 'root' label to any root file changes
+
+# Add 'release' label to any PR that is opened against the `main` branch
+release:
+  - base-branch: ['main', 'UAT']
+  - head-branch: ['UAT', 'E2E']
+
+development: 
+  - head-branch: ['^[[:lower:]-]+#[[:digit:]]+$']
